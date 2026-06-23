@@ -167,3 +167,140 @@ useGSAP(() => {
 * GSAP handles the transition smoothly using the `power1.inOut` easing function.
 
 This creates a clean and modern navigation experience while keeping the navigation bar readable as users scroll through the page.
+
+
+# Hero Section
+
+Created the `Hero.jsx` component for the landing page hero section.
+
+## Features
+
+### Animated Title and Subtitle
+
+Added the hero title and subtitle with animations to create an engaging introduction for the website.
+
+### Parallax Leaf Animation
+
+Added decorative green leaves on both sides of the hero section. These leaves move while scrolling, creating a subtle parallax effect.
+
+```jsx
+<h1 className="title">Mojito</h1>
+
+<img
+  src="/images/hero-left-leaf.png"
+  alt="left-leaf"
+  className="left-leaf"
+/>
+
+<img
+  src="/images/hero-right-leaf.png"
+  alt="right-leaf"
+  className="right-leaf"
+/>
+```
+
+### Leaf Utility Classes
+
+The positioning and responsiveness of the leaves are handled using utility classes.
+
+```scss
+.left-leaf {
+  @apply absolute left-0 md:top-20 xl:top-36 2xl:top-52 md:bottom-auto -bottom-20 md:w-fit w-1/3;
+}
+
+.right-leaf {
+  @apply absolute right-0 md:bottom-0 xl:top-0 2xl:top-12 top-1/2 md:w-fit w-24;
+}
+```
+
+## Utility Classes
+
+Most of the layout and styling are handled using reusable utility classes, making the component easier to maintain.
+
+### Noise Background
+
+The `noisy` utility class adds a subtle texture overlay to the hero section.
+
+```scss
+.noisy {
+  @apply absolute inset-0 size-full bg-[url("/images/noise.png")];
+}
+```
+
+### Hero Content Layout
+
+```scss
+.body {
+  @apply container mx-auto absolute left-1/2 -translate-x-1/2 lg:bottom-20 top-auto md:top-[30vh] flex justify-between items-end px-5;
+
+  .content {
+    @apply flex lg:flex-row flex-col w-full gap-10 justify-between items-center lg:items-end mx-auto;
+
+    p:nth-of-type(2) {
+      @apply font-modern-negra text-6xl text-yellow max-w-xl;
+    }
+
+    p:last-of-type {
+      @apply 2xl:text-start text-center;
+    }
+
+    .view-cocktails {
+      @apply space-y-5 text-lg lg:max-w-2xs md:max-w-xs w-full;
+
+      p {
+        @apply text-left;
+      }
+
+      a {
+        @apply font-semibold opacity-80 2xl:text-start text-center hover:text-yellow;
+      }
+    }
+  }
+}
+```
+
+## Hero Component Structure
+
+```jsx
+<section id="hero" className="noisy">
+  <h1 className="title">Mojito</h1>
+
+  <img
+    src="/images/hero-left-leaf.png"
+    alt="left-leaf"
+    className="left-leaf"
+  />
+
+  <img
+    src="/images/hero-right-leaf.png"
+    alt="right-leaf"
+    className="right-leaf"
+  />
+
+  <div className="body">
+    <div className="content">
+      <div className="space-y-5 hidden md:block">
+        <p>cool. crisp. classic</p>
+
+        <p className="subtitle">
+          sip the spirit
+          <br />
+          of summer
+        </p>
+      </div>
+
+      <div className="view-cocktails">
+        <p className="subtitle">
+          Every cocktail on our menu is a blend of premium ingredients,
+          creative flair, and timeless recipes — designed to delight your
+          senses.
+        </p>
+
+        <a href="#cocktails">view cocktails</a>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+A temporary blank section was added below the hero section to make it easier to test and visualize the scroll-triggered animations during development.
