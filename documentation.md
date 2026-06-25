@@ -304,3 +304,96 @@ The `noisy` utility class adds a subtle texture overlay to the hero section.
 ```
 
 A temporary blank section was added below the hero section to make it easier to test and visualize the scroll-triggered animations during development.
+
+
+# GSAP Mojito Animation
+
+### Mobile Support
+
+To make the animation work smoothly on both desktop and mobile devices, adjust the `ScrollTrigger` start and end positions based on the screen size.
+
+```jsx
+const isMobile = useMediaQuery({ maxWidth: 767 });
+
+const startValue = isMobile ? "top 50%" : "center 60%";
+const endValue = isMobile ? "120% top" : "bottom top";
+```
+
+---
+
+### Adding the Background Video
+
+In `Hero.jsx`, add the following below the hero section:
+
+```jsx
+<div className="video absolute inset-0">
+  <video
+    ref={videoRef}
+    src="/videos/input.mp4"
+    muted
+    playsInline
+    preload="auto"
+  />
+</div>
+```
+
+This places the video behind the hero content but above the background image, allowing it to blend seamlessly with the hero section.
+
+The `video` utility class contains:
+
+```css
+.video {
+  @apply w-full md:h-[80%] h-1/2 absolute bottom-0 left-0 md:object-contain object-bottom object-cover;
+}
+```
+
+---
+
+### Animating the Video on Scroll
+
+Create a GSAP timeline with `ScrollTrigger` and animate the video's `currentTime` property instead of using a traditional play animation.
+
+```jsx
+let tl = gsap.timeline({
+  scrollTrigger: {
+    trigger: "video",
+    start: startValue,
+    end: endValue,
+    scrub: true,
+    pin: true,
+  },
+});
+
+videoRef.current.onloadedmetadata = () => {
+  tl.to(videoRef.current, {
+    currentTime: videoRef.current.duration,
+  });
+};
+```
+
+The `loadedmetadata` event ensures that the video's metadata (such as its duration) has been loaded before creating the animation. Without waiting for this event, `video.duration` may not be available, causing the animation to fail.
+
+---
+
+### Making Scroll Animation Smooth
+
+Using a normal MP4 often results in choppy scrolling because videos are typically encoded with keyframes placed several frames apart. When GSAP scrubs through the video by changing `currentTime`, the browser has to decode intermediate frames, which can cause stuttering.
+
+To improve smoothness, re-encode the video using FFmpeg with a keyframe on every frame.
+
+First, install **FFmpeg**, then navigate to the folder containing your video and run:
+
+```bash
+ffmpeg -i input.mp4 -vf scale=960:-1 -movflags faststart -vcodec libx264 -crf 20 -g 1 -pix_fmt yuv420p output.mp4
+```
+
+#### What these options do
+
+* `scale=960:-1` — Resizes the video to a width of 960px while maintaining its aspect ratio.
+* `-movflags faststart` — Moves metadata to the beginning of the file for faster loading.
+* `-vcodec libx264` — Encodes the video using the H.264 codec.
+* `-crf 20` — Maintains high visual quality with reasonable file size.
+* `-g 1` — Creates a keyframe for every frame, making scroll scrubbing much smoother.
+* `-pix_fmt yuv420p` — Ensures broad browser compatibility.
+
+Finally, replace the original video with the newly generated `output.mp4` for a much smoother scroll-driven animation.
