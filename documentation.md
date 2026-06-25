@@ -397,3 +397,145 @@ ffmpeg -i input.mp4 -vf scale=960:-1 -movflags faststart -vcodec libx264 -crf 20
 * `-pix_fmt yuv420p` — Ensures broad browser compatibility.
 
 Finally, replace the original video with the newly generated `output.mp4` for a much smoother scroll-driven animation.
+# Cocktails Section
+
+In this section, we fill the empty space below the hero section with the cocktail menu.
+
+```jsx
+<section id="cocktails" className="noisy">
+  <img
+    src="/images/cocktail-left-leaf.png"
+    alt="l-leaf"
+    id="c-left-leaf"
+  />
+
+  <img
+    src="/images/cocktail-right-leaf.png"
+    alt="r-leaf"
+    id="c-right-leaf"
+  />
+
+  <div className="list">
+    <div className="popular">
+      <h2>Most popular cocktails:</h2>
+
+      <ul>
+        {cocktailLists.map(({ name, country, detail, price }) => (
+          <li key={name}>
+            <div className="md:me-28">
+              <h3>{name}</h3>
+              <p>
+                {country} | {detail}
+              </p>
+            </div>
+
+            <span>- {price}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div className="loved">
+      <h2>Most Loved Drink</h2>
+
+      <ul>
+        {mockTailLists.map(({ name, country, detail, price }) => (
+          <li key={name}>
+            <div className="me-28">
+              <h3>{name}</h3>
+              <p>
+                {country} | {detail}
+              </p>
+            </div>
+
+            <span>- {price}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+```
+
+The main content of this section is inside the `list` container. It contains two columns:
+
+* `popular` – displays the list of the most popular cocktails.
+* `loved` – displays the list of the most loved drinks.
+
+Both `list`, `popular`, and `loved` are utility classes that organize the layout and apply consistent spacing and typography.
+
+```css
+.list {
+  @apply container mx-auto relative z-10 flex md:flex-row flex-col justify-between items-start gap-20 pt-40 2xl:px-0 px-5;
+
+  .popular {
+    @apply space-y-8 w-full md:w-fit;
+  }
+
+  .loved {
+    @apply space-y-8 w-full md:w-fit pb-20 md:pb-0;
+  }
+
+  h2 {
+    @apply text-xl font-medium;
+  }
+
+  ul {
+    @apply space-y-8;
+
+    li {
+      @apply flex justify-between items-start;
+
+      h3 {
+        @apply font-modern-negra 2xl:text-3xl text-xl text-yellow;
+      }
+
+      p {
+        @apply text-sm;
+      }
+
+      span {
+        @apply text-xl font-medium;
+      }
+    }
+  }
+}
+```
+
+---
+
+### GSAP Animation
+
+To make the section feel more dynamic, both decorative leaves animate into the screen as the user scrolls to the cocktails section.
+
+A `ScrollTrigger` timeline is created that begins when the top of the `#cocktails` section reaches 30% of the viewport and ends when the bottom reaches 80%. The `scrub` option synchronizes the animation with the user's scroll position.
+
+```jsx
+useGSAP(() => {
+  const parallaxTimeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#cocktails",
+      start: "top 30%",
+      end: "bottom 80%",
+      scrub: true,
+    },
+  });
+
+  parallaxTimeline
+    .from("#c-left-leaf", {
+      x: -100,
+      y: 100,
+    })
+    .from("#c-right-leaf", {
+      x: 100,
+      y: 100,
+    });
+});
+```
+
+The animation starts with:
+
+* The **left leaf** positioned 100px to the left and 100px below its final position.
+* The **right leaf** positioned 100px to the right and 100px below its final position.
+
+As the user scrolls through the section, both leaves smoothly move into their natural positions, creating a subtle parallax entrance effect.
